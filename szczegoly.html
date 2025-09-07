@@ -14,12 +14,17 @@
         .form-group { margin-bottom: 15px; }
         label { display: block; margin-bottom: 5px; font-weight: bold; }
         input[type="text"], textarea, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-        button { display: block; width: 100%; padding: 12px; background-color: #28a745; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; transition: background-color 0.2s; }
-        button:hover { background-color: #218838; }
-        button:disabled { background-color: #ccc; }
+        button { display: block; width: 100%; padding: 12px; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; transition: background-color 0.2s; }
+        button:disabled { background-color: #ccc; cursor: not-allowed; }
+        #guest-form button { background-color: #28a745; }
+        #guest-form button:hover { background-color: #218838; }
+        #decline-form button { background-color: #dc3545; }
+        #decline-form button:hover { background-color: #c82333; }
         .form-response { text-align: center; padding: 15px; margin-top: 20px; border-radius: 4px; display: none; }
         .form-response.success { background-color: #d4edda; color: #155724; }
         .form-response.error { background-color: #f8d7da; color: #721c24; }
+        #plota-list { list-style-type: none; padding: 0; }
+        #plota-list li { background-color: #f8f9fa; padding: 10px; border-radius: 4px; margin-bottom: 8px; text-align: center; font-size: 1.1em; }
     </style>
 </head>
 <body>
@@ -33,96 +38,134 @@
     </header>
 
     <main>
-        <h2>Formularz dla Gości</h2>
-        <p>Prosimy o wypełnienie poniższego formularza, aby potwierdzić obecność i przekazać nam wszystkie niezbędne informacje. Dziękujemy!</p>
-        
+        <h2>Plota: Kto już potwierdził? 😉</h2>
+        <ul id="plota-list">
+            <li>Ładowanie listy gości...</li>
+        </ul>
+
+        <h2>Potwierdź swoją obecność</h2>
+        <p>Jeżeli będziesz z nami w tym dniu, prosimy o wypełnienie poniższego formularza.</p>
         <form id="guest-form">
-            <h3>Dane podstawowe</h3>
+            <input type="hidden" name="submissionType" value="confirm">
             <div class="form-group">
                 <label for="nazwisko">Nazwisko:</label>
                 <input type="text" id="nazwisko" name="Nazwisko" required placeholder="np. Kowalscy">
             </div>
             <div class="form-group">
-                <label for="imiona">Imiona wszystkich gości (prosimy wpisać wszystkich, którzy przybędą):</label>
-                <input type="text" id="imiona" name="ImionaGosci" required placeholder="np. Anna, Jan, Zofia">
-            </div>
-            
-            <h3>Nocleg i dieta</h3>
-             <div class="form-group">
-                <label for="nocleg">Zapotrzebowanie na nocleg:</label>
-                <select id="nocleg" name="Nocleg">
-                    <option value="Nie dotyczy">Proszę wybrać...</option>
-                    <option value="Nie, dziękujemy">Nie, dziękujemy</option>
-                    <option value="Tak, prosimy o rezerwację">Tak, prosimy o rezerwację</option>
-                </select>
+                <label for="imiona">Imiona gości:</label>
+                <input type="text" id="imiona" name="ImionaGosci" required placeholder="np. Anna, Jan (oddzielone przecinkiem)">
             </div>
             <div class="form-group">
-                <label for="dieta">Informacje o diecie (np. wegetariańska, alergie):</label>
-                <textarea id="dieta" name="Dieta" rows="3" placeholder="Jeśli nie dotyczy, pozostaw puste"></textarea>
+                <label for="nocleg">Nocleg:</label>
+                <select id="nocleg" name="Nocleg"><option value="Nie dotyczy">Proszę wybrać...</option><option value="Nie, dziękujemy">Nie, dziękujemy</option><option value="Tak, prosimy o rezerwację">Tak, prosimy o rezerwację</option></select>
             </div>
-
-            <h3>Transport</h3>
+            <div class="form-group">
+                <label for="dieta">Informacje o diecie:</label>
+                <textarea id="dieta" name="Dieta" rows="3" placeholder="np. wegetariańska, alergie"></textarea>
+            </div>
             <div class="form-group">
                 <label for="transport-dojazd">Dojazd na wesele:</label>
-                <select id="transport-dojazd" name="TransportDojazd">
-                    <option value="Brak">Brak / Dojazd własny</option>
-                    <option value="Autobus z Widzowa">Autobus z Widzowa</option>
-                    <option value="Autobus z centrum Warszawy">Autobus z centrum Warszawy</option>
-                </select>
+                <select id="transport-dojazd" name="TransportDojazd"><option value="Brak">Brak / Dojazd własny</option><option value="Autobus z Widzewa">Autobus z Widzewa</option><option value="Autobus z centrum Warszawy">Autobus z centrum Warszawy</option></select>
             </div>
             <div class="form-group">
                 <label for="transport-powrot">Powrót z wesela:</label>
-                <select id="transport-powrot" name="TransportPowrot">
-                    <option value="Brak">Brak / Powrót własny</option>
-                    <option value="Autobus do Widzowa">Autobus do Widzowa</option>
-                    <option value="Autobus do centrum Warszawy">Autobus do centrum Warszawy</option>
-                </select>
+                <select id="transport-powrot" name="TransportPowrot"><option value="Brak">Brak / Powrót własny</option><option value="Autobus do Widzewa">Autobus do Widzewa</option><option value="Autobus do centrum Warszawy">Autobus do centrum Warszawy</option></select>
             </div>
-
-            <button type="submit" id="submit-button">Wyślij informacje</button>
+            <button type="submit">Tak, będziemy!</button>
         </form>
+        <div id="response-confirm" class="form-response"></div>
+        
+        <h2>Nie możesz być z nami?</h2>
+        <p>Z przykrością przyjmujemy tę wiadomość. Daj nam znać, wypełniając poniższe pola, abyśmy mogli zaktualizować listę.</p>
+        <form id="decline-form">
+             <input type="hidden" name="submissionType" value="decline">
+             <div class="form-group">
+                <label for="nazwisko-decline">Nazwisko:</label>
+                <input type="text" id="nazwisko-decline" name="Nazwisko" required>
+            </div>
+            <div class="form-group">
+                <label for="imiona-decline">Imiona gości:</label>
+                <input type="text" id="imiona-decline" name="ImionaGosci" required>
+            </div>
+            <button type="submit">Niestety, nie damy rady</button>
+        </form>
+        <div id="response-decline" class="form-response"></div>
 
-        <div id="form-response" class="form-response"></div>
     </main>
 
     <script>
         // UWAGA! Wklej tutaj URL swojej aplikacji webowej z Google Apps Script
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw-y1_Yxl4sqePM-IFXMYqmaKen7Hqe44ZSglsPWvrLG1gkk9BnnPfl4p5wBE-qIibF/exec";
 
-        const form = document.getElementById('guest-form');
-        const submitButton = document.getElementById('submit-button');
-        const formResponseDiv = document.getElementById('form-response');
+        const plotaList = document.getElementById('plota-list');
+        const confirmForm = document.getElementById('guest-form');
+        const declineForm = document.getElementById('decline-form');
+        const responseConfirmDiv = document.getElementById('response-confirm');
+        const responseDeclineDiv = document.getElementById('response-decline');
 
-        form.addEventListener('submit', function(e) {
-            e.preventDefault(); // Zapobiegaj domyślnemu wysłaniu formularza
-            submitButton.disabled = true;
-            submitButton.textContent = 'Wysyłanie...';
+        // --- 1. Funkcja do ładowania listy "Plota" przy starcie strony ---
+        function loadGuestList() {
+            fetch(SCRIPT_URL)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.result === 'success' && data.data.length > 0) {
+                        plotaList.innerHTML = ''; // Wyczyść "Ładowanie..."
+                        data.data.forEach(guest => {
+                            const li = document.createElement('li');
+                            li.textContent = `${guest.surname} (${guest.count} ${guest.count > 1 ? 'osoby' : 'osoba'})`;
+                            plotaList.appendChild(li);
+                        });
+                    } else if (data.result === 'success') {
+                        plotaList.innerHTML = '<li>Na razie nikt się nie wpisał. Bądź pierwszy/a!</li>';
+                    } else {
+                         plotaList.innerHTML = '<li>Nie udało się załadować listy.</li>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Błąd ładowania listy gości:', error);
+                    plotaList.innerHTML = '<li>Wystąpił błąd podczas ładowania listy.</li>';
+                });
+        }
+        
+        // --- 2. Funkcja do obsługi wysyłania formularzy ---
+        function handleFormSubmit(form, responseDiv) {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const submitButton = form.querySelector('button');
+                submitButton.disabled = true;
+                submitButton.textContent = 'Przetwarzanie...';
 
-            fetch(SCRIPT_URL, {
-                method: 'POST',
-                body: new FormData(form)
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.result === 'success') {
-                    formResponseDiv.textContent = 'Dziękujemy! Twoje dane zostały zapisane.';
-                    formResponseDiv.className = 'form-response success';
-                    form.reset(); // Wyczyść formularz
-                } else {
-                    throw new Error(data.message || 'Nieznany błąd');
-                }
-            })
-            .catch(error => {
-                console.error('Error!', error);
-                formResponseDiv.textContent = 'Wystąpił błąd podczas wysyłania formularza. Spróbuj ponownie. ' + error.message;
-                formResponseDiv.className = 'form-response error';
-            })
-            .finally(() => {
-                submitButton.disabled = false;
-                submitButton.textContent = 'Wyślij informacje';
-                formResponseDiv.style.display = 'block';
+                fetch(SCRIPT_URL, { method: 'POST', body: new FormData(form) })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.result === 'success') {
+                            responseDiv.textContent = 'Dziękujemy! Twoja odpowiedź została zapisana.';
+                            responseDiv.className = 'form-response success';
+                            form.reset();
+                            loadGuestList(); // Odśwież listę "Plota"
+                        } else {
+                            throw new Error(data.message || 'Nieznany błąd');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Błąd wysyłania formularza:', error);
+                        responseDiv.textContent = 'Wystąpił błąd. Spróbuj ponownie. ' + error.message;
+                        responseDiv.className = 'form-response error';
+                    })
+                    .finally(() => {
+                        submitButton.disabled = false;
+                        // Przywróć oryginalny tekst przycisku
+                        if(form.id === 'guest-form') submitButton.textContent = 'Tak, będziemy!';
+                        if(form.id === 'decline-form') submitButton.textContent = 'Niestety, nie damy rady';
+                        responseDiv.style.display = 'block';
+                    });
             });
-        });
+        }
+
+        // --- 3. Uruchomienie funkcji ---
+        document.addEventListener('DOMContentLoaded', loadGuestList);
+        handleFormSubmit(confirmForm, responseConfirmDiv);
+        handleFormSubmit(declineForm, responseDeclineDiv);
     </script>
 </body>
 </html>
