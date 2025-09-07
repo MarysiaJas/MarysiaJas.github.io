@@ -10,7 +10,15 @@
         nav a { margin: 0 15px; text-decoration: none; color: #333; font-weight: bold; }
         .gallery { display: flex; flex-wrap: wrap; justify-content: center; padding: 20px; gap: 15px; min-height: 100px; }
         /* Poprawka: Style są teraz stosowane do obrazka WEWNĄTRZ kontenera .gallery-item */
-        .gallery-item img { max-width: 350px; height: auto; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); display: block; }
+        .gallery-item img {
+            max-width: 500px;  /* Maksymalna szerokość 500px */
+            max-height: 500px; /* Maksymalna wysokość 500px */
+            width: auto;       /* Szerokość dostosowuje się automatycznie */
+            height: auto;      /* Wysokość dostosowuje się automatycznie, zachowując proporcje */
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            display: block;
+        }
         h1, h2 { color: #555; }
         .loader { font-size: 1.2em; color: #777; }
     </style>
