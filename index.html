@@ -1,1 +1,99 @@
-Hello!
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marysia i Jaś - Nasz Wielki Dzień</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; margin: 0; background-color: #fdfdfd; }
+        header { background-color: #f0f0f0; padding: 20px 0; }
+        nav a { margin: 0 15px; text-decoration: none; color: #333; font-weight: bold; }
+        .gallery { display: flex; flex-wrap: wrap; justify-content: center; padding: 20px; gap: 15px; min-height: 100px; }
+        .gallery-item img { max-width: 350px; height: auto; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        h1, h2 { color: #555; }
+        .loader { font-size: 1.2em; color: #777; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Marysia i Jaś</h1>
+        <nav>
+            <a href="index.html">Strona Główna</a>
+            <a href="szczegoly.html">Szczegóły dla gości weselnych</a>
+        </nav>
+    </header>
+
+    <main>
+        <h2>Marysia i Jaś</h2>
+        <div class="gallery" id="gallery-marysia-jas">
+            <p class="loader">Ładowanie zdjęć...</p>
+        </div>
+
+        <h2>Inspiracje prezentowe</h2>
+        <div class="gallery" id="gallery-inspiracje">
+            <p class="loader">Ładowanie inspiracji...</p>
+        </div>
+    </main>
+
+    <script>
+        // ### KROK 3: SKONFIGURUJ ZMIENNE PONIŻEJ ###
+
+        // 1. Wpisz swoją nazwę użytkownika na GitHubie
+        const githubUser = "TwojaNazwaUzytkownika"; 
+
+        // 2. Wpisz dokładną nazwę swojego repozytorium
+        const repoName = "nazwa-twojego-repozytorium"; 
+
+        // --- Koniec konfiguracji ---
+
+        /**
+         * Funkcja do wczytywania zdjęć z danego folderu na GitHubie 
+         * i umieszczania ich w określonym kontenerze na stronie.
+         * @param {string} folderPath - Nazwa folderu w repozytorium.
+         * @param {string} containerId - ID kontenera DIV, do którego trafią zdjęcia.
+         */
+        function loadGallery(folderPath, containerId) {
+            const galleryContainer = document.getElementById(containerId);
+            const apiUrl = `https://api.github.com/repos/${githubUser}/${repoName}/contents/${folderPath}`;
+
+            fetch(apiUrl)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Folder "${folderPath}" nie został znaleziony lub wystąpił błąd sieci.`);
+                    }
+                    return response.json();
+                })
+                .then(files => {
+                    galleryContainer.innerHTML = ''; // Wyczyść wiadomość "Ładowanie..."
+
+                    if (Array.isArray(files) && files.length > 0) {
+                        files.forEach(file => {
+                            if (file.type === 'file' && /\.(jpg|jpeg|png|gif)$/i.test(file.name)) {
+                                const img = document.createElement('img');
+                                img.src = file.download_url;
+                                img.alt = file.name;
+                                img.className = 'gallery-item';
+                                galleryContainer.appendChild(img);
+                            }
+                        });
+                    } else {
+                        galleryContainer.innerHTML = '<p>W tym folderze nie ma jeszcze żadnych zdjęć.</p>';
+                    }
+                })
+                .catch(error => {
+                    console.error(`Błąd podczas wczytywania galerii z "${folderPath}":`, error);
+                    galleryContainer.innerHTML = `<p>Nie udało się załadować zdjęć. Sprawdź, czy nazwa folderu i repozytorium są poprawne.</p>`;
+                });
+        }
+
+        // Uruchomienie funkcji dla obu galerii
+        // Skrypt pobierze zdjęcia z folderu "marysia_jas" i umieści je w divie o id "gallery-marysia-jas"
+        loadGallery("marysia_jas", "gallery-marysia-jas");
+
+        // Skrypt pobierze zdjęcia z folderu "inspiracje_prezentowe" i umieści je w divie o id "gallery-inspiracje"
+        loadGallery("inspiracje_prezentowe", "gallery-inspiracje");
+    </script>
+
+</body>
+</html>
