@@ -9,7 +9,8 @@
         header { background-color: #f0f0f0; padding: 20px 0; }
         nav a { margin: 0 15px; text-decoration: none; color: #333; font-weight: bold; }
         .gallery { display: flex; flex-wrap: wrap; justify-content: center; padding: 20px; gap: 15px; min-height: 100px; }
-        .gallery-item img { max-width: 350px; height: auto; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        /* Poprawka: Style są teraz stosowane do obrazka WEWNĄTRZ kontenera .gallery-item */
+        .gallery-item img { max-width: 350px; height: auto; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); display: block; }
         h1, h2 { color: #555; }
         .loader { font-size: 1.2em; color: #777; }
     </style>
@@ -37,25 +38,26 @@
     </main>
 
     <script>
-        // ### KROK 3: SKONFIGURUJ ZMIENNE PONIŻEJ ###
+        // ### POPRAWIONA KONFIGURACJA ###
 
-        // 1. Wpisz swoją nazwę użytkownika na GitHubie
-        const githubUser = "MarysiaJas"; 
+        // 1. Nazwa użytkownika na GitHubie
+        const githubUser = "MarysiaJas";
 
-        // 2. Wpisz dokładną nazwę swojego repozytorium
-        const repoName = "MarysiaJas.github.io"; 
+        // 2. Nazwa repozytorium
+        const repoName = "MarysiaJas.github.io";
 
         // --- Koniec konfiguracji ---
 
         /**
-         * Funkcja do wczytywania zdjęć z danego folderu na GitHubie 
+         * Funkcja do wczytywania zdjęć z danego folderu na GitHubie
          * i umieszczania ich w określonym kontenerze na stronie.
          * @param {string} folderPath - Nazwa folderu w repozytorium.
          * @param {string} containerId - ID kontenera DIV, do którego trafią zdjęcia.
          */
         function loadGallery(folderPath, containerId) {
             const galleryContainer = document.getElementById(containerId);
-            const apiUrl = `https://api.github.com/repos/${githubUser}/${repoName}/contents/${folderPath}`;
+            // POPRAWKA: Dodano "?ref=main", aby wskazać właściwą gałąź (branch)
+            const apiUrl = `https://api.github.com/repos/${githubUser}/${repoName}/contents/${folderPath}?ref=main`;
 
             fetch(apiUrl)
                 .then(response => {
@@ -73,8 +75,12 @@
                                 const img = document.createElement('img');
                                 img.src = file.download_url;
                                 img.alt = file.name;
-                                img.className = 'gallery-item';
-                                galleryContainer.appendChild(img);
+
+                                // POPRAWKA CSS: Tworzymy kontener <div> dla każdego obrazka, aby style (cień, ramka) działały poprawnie
+                                const galleryItemDiv = document.createElement('div');
+                                galleryItemDiv.className = 'gallery-item';
+                                galleryItemDiv.appendChild(img);
+                                galleryContainer.appendChild(galleryItemDiv);
                             }
                         });
                     } else {
