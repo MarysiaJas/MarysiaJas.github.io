@@ -9,12 +9,11 @@
         header { background-color: #f0f0f0; padding: 20px 0; }
         nav a { margin: 0 15px; text-decoration: none; color: #333; font-weight: bold; }
         .gallery { display: flex; flex-wrap: wrap; justify-content: center; padding: 20px; gap: 15px; min-height: 100px; }
-        /* Poprawka: Style są teraz stosowane do obrazka WEWNĄTRZ kontenera .gallery-item */
         .gallery-item img {
-            max-width: 500px;  /* Maksymalna szerokość 500px */
-            max-height: 500px; /* Maksymalna wysokość 500px */
-            width: auto;       /* Szerokość dostosowuje się automatycznie */
-            height: auto;      /* Wysokość dostosowuje się automatycznie, zachowując proporcje */
+            max-width: 500px;
+            max-height: 500px;
+            width: auto;
+            height: auto;
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
             display: block;
@@ -46,14 +45,9 @@
     </main>
 
     <script>
-        // ### POPRAWIONA KONFIGURACJA ###
-
-        // 1. Nazwa użytkownika na GitHubie
+        // ### KONFIGURACJA ###
         const githubUser = "MarysiaJas";
-
-        // 2. Nazwa repozytorium
         const repoName = "MarysiaJas.github.io";
-
         // --- Koniec konfiguracji ---
 
         /**
@@ -64,7 +58,6 @@
          */
         function loadGallery(folderPath, containerId) {
             const galleryContainer = document.getElementById(containerId);
-            // POPRAWKA: Dodano "?ref=main", aby wskazać właściwą gałąź (branch)
             const apiUrl = `https://api.github.com/repos/${githubUser}/${repoName}/contents/${folderPath}?ref=main`;
 
             fetch(apiUrl)
@@ -78,19 +71,31 @@
                     galleryContainer.innerHTML = ''; // Wyczyść wiadomość "Ładowanie..."
 
                     if (Array.isArray(files) && files.length > 0) {
-                        files.forEach(file => {
-                            if (file.type === 'file' && /\.(jpg|jpeg|png|gif)$/i.test(file.name)) {
+                        
+                        // Przefiltruj, aby zostawić tylko pliki graficzne
+                        const imageFiles = files.filter(file => 
+                            file.type === 'file' && /\.(jpg|jpeg|png|gif)$/i.test(file.name)
+                        );
+                        
+                        // *** TUTAJ JEST ZMIANA ***
+                        // Odwróć kolejność tablicy, aby najnowsze zdjęcia (dodane jako ostatnie) były na początku.
+                        imageFiles.reverse();
+
+                        if (imageFiles.length > 0) {
+                             imageFiles.forEach(file => {
                                 const img = document.createElement('img');
                                 img.src = file.download_url;
                                 img.alt = file.name;
 
-                                // POPRAWKA CSS: Tworzymy kontener <div> dla każdego obrazka, aby style (cień, ramka) działały poprawnie
                                 const galleryItemDiv = document.createElement('div');
                                 galleryItemDiv.className = 'gallery-item';
                                 galleryItemDiv.appendChild(img);
                                 galleryContainer.appendChild(galleryItemDiv);
-                            }
-                        });
+                            });
+                        } else {
+                            galleryContainer.innerHTML = '<p>W tym folderze nie ma jeszcze żadnych zdjęć.</p>';
+                        }
+                       
                     } else {
                         galleryContainer.innerHTML = '<p>W tym folderze nie ma jeszcze żadnych zdjęć.</p>';
                     }
@@ -102,10 +107,7 @@
         }
 
         // Uruchomienie funkcji dla obu galerii
-        // Skrypt pobierze zdjęcia z folderu "marysia_jas" i umieści je w divie o id "gallery-marysia-jas"
         loadGallery("marysia_jas", "gallery-marysia-jas");
-
-        // Skrypt pobierze zdjęcia z folderu "inspiracje_prezentowe" i umieści je w divie o id "gallery-inspiracje"
         loadGallery("inspiracje_prezentowe", "gallery-inspiracje");
     </script>
 
